@@ -1,0 +1,254 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title></title>
+
+<script language="javascript" src="js/Config.js"></script>
+<script language="javascript" src="js/swfobject.js"></script>
+<script language="javascript" src="js/Detection.js"></script>
+
+<!-- ***************** AICC Includes ****************** -->
+<script language="javascript" src="js/AICCHACP.js"></script>
+<script language="javascript" src="js/Debugger.js"></script>
+<!-- ***************** AICC Includes ends ****************** -->
+
+<!-- ***************** SCORM Includes ****************** -->
+<script language="javascript" src="js/APIWrapper12.js"></script>
+<script language="javascript" src="js/Scorm12.js"></script>
+<!-- ***************** SCORM Includes ends ****************** -->
+
+<!-- ***************** ReSourse center Includes ends ****************** -->
+<script language="javascript" src="rss/includes_new.js"></script>
+<script language="javascript" src="js/rss_json.js"></script>
+<!-- ***************** ReSourse center Includes ends ****************** -->
+
+<script language="javascript">
+
+var type;
+type = GetVal("type",document.location.search);
+document.title = CourseName;
+
+function LoadRSS(arg){
+	
+	feedcnt = feeds.feed.length;
+	RSSXML = "<content>";
+	if(arg == 1){
+		setTimeout('sendRSS()', 4000);
+	}else{
+		setTimeout('sendRSS()', 10000);
+	}
+	
+	for(i=0; i< feedcnt; i++){
+	
+		if((feeds.feed[i].Display).toLowerCase() != "false"){
+	
+			if(StudentID.indexOf("internal") != -1){
+				//YQL(feeds.feed[i].Title, feeds.feed[i].Link);
+				newFeed(feeds.feed[i].Title, feeds.feed[i].Link, feeds.feed[i].Category, feeds.feed[i].Type, feeds.feed[i].Display);
+			}else{
+				if(feeds.feed[i].Type != "Private"){
+				newFeed(feeds.feed[i].Title, feeds.feed[i].Link, feeds.feed[i].Category, feeds.feed[i].Type, feeds.feed[i].Display);						}
+			}
+		}
+		//alert(RSSXML);
+	}
+	
+	
+}
+
+function thisMovie(movieName) {
+	if (navigator.appName.indexOf("Microsoft") != -1) {
+    	return window[movieName];
+    } else {
+		
+    	return document[movieName];
+    }
+}
+
+function getRSS(){
+	sendRSS();
+}
+	 
+function sendRSS(){
+	
+	//alert("From sendRSS :: " + RSSXML);
+	
+	if(RSSXML != "<content>"){
+		//alert(RSSXML.indexOf("</content>"));
+		//if(RSSXML.indexOf("</content>") == -1){
+		//	RSSXML = RSSXML + "</content>";
+		//}
+		var temp = RSSXML + "</content>"; 
+		thisMovie("main").sendRSSToFlash(temp);
+	}else{
+		thisMovie("main").sendRSSToFlash("Denied");
+	}
+}
+
+
+function RefressRSS(){
+	LoadRSS(2);
+	//setTimeout('sendRSS()', 1000);
+}
+function OpenRSSLink(arg){
+	
+	var RSSWin = window.open(arg,"RSS","width=1000,height=600,resizable=1,scrollbars=1,left=10,top=50,addressbar=1");
+	RSSWin.focus();
+}
+
+function UpdateCourseStatus(arg1,arg2){
+
+	//alert("Score :: " + arg2);
+	Lesson_status = arg1;
+	Score = arg2;
+}
+
+function UpdateAccessStatus(arg1,arg2){
+	//alert(arg1);
+	Lesson_location = arg1;
+	PageVisitedStatus = arg2;
+}
+
+function loadCerfiticate(uName,cName){
+	//alert("uName : " + uName + " --cName :" + cName+ "--" + sName);
+	var mywindow = window.open("html/certificate.html?uName="+uName+"~cName="+cName, "mywindow","location=0,status=0,scrollbars=0,width=900,height=680"); 
+	mywindow.moveTo(0,0);
+}
+
+/********** This function is used to Launch the external links from Resourcecentre and Virtual Path *************/
+
+function launchDownLoad(urlStr)	{
+	window.open("opendoc.html?doc="+urlStr, "review","width=1000,height=600,resizable=1,scrollbars=1,left=10,top=50,addressbar=0");
+}
+
+function launchResourceCenter(urlStr)	{
+
+	//alert(urlStr)
+	window.open("html/resourceCenter.htm?packageName="+urlStr, "review","width=700,height=544,resizable=0,scrollbars=0,left=10,top=50,addressbar=0");
+}
+
+function openHelp(url,pagetype){
+	//alert("help : " +pagetype);
+	url = url + "?pageType=" + pagetype
+	window.open(url, 'helpwnd','fullscreen=0,location=0,status=0,scrollbars=0,width=1000,height=673');
+}
+
+// Added by : for WLB Website course launch
+// Ramanan : 31/01/2010
+function openExternalCourse(url,moudlename){
+	url  += "^ModuleName="+moudlename;
+	//alert("openExternalCourse : " +url);
+	window.open("html/courseLauncher.html?launchURL="+url,"wLauncher", "menubar=no,scrollbars=no,location=no,height=768,width=1024,left=0,top=0,leftmargin=0,rightmargin=0");
+}
+
+function trace(arg){
+	alert("Trace :: " + arg);
+}
+function fnLoad(){
+	
+	if(type == "aicc"){
+	
+		URLParse();
+	//	setTimeout('URLParse()', 500);
+		//setTimeOut(URLParse();
+	}
+	else if(type == "scorm"){
+		doLMSInitialize();
+	}
+	else if(type == "wbt"){
+		LoadCourse();
+	}
+}
+function closeCourse(){
+	top.close();
+}
+// RAMANAN : 1/04/2010
+function launchEmail(mailID){
+	var mailLocation ="mailto:"+mailID;
+	window.location.href = mailLocation;	
+}
+//
+
+function fnUnload(){
+
+	if(type == "aicc"){
+		//alert(type);
+		PutParam(1);
+		LoadSurvey();
+	}else if(type == "scorm"){
+		doLMSFinish();
+	}else if(type == "wbt"){
+		var op = window.opener; 
+		op.opener = self; 
+		op.close();
+	}
+}
+
+</script>
+<style type="text/css">
+<!--
+.style1 {font-family: Verdana, Arial, Helvetica, sans-serif}
+-->
+</style>
+</head>
+
+<body bgcolor="#ffffff" leftmargin="0" topmargin="0" marginwidth="0" marginheight="0" onload="fnLoad();" onBeforeUnload="fnUnload();">
+<div id="flashbanner"align="center" ><span class="style1">Course loading.</span>..</div>
+<script language="javascript">
+
+function LoadCourse(){
+
+	if(lmsHeartbeat){
+		checkTime();
+	}
+
+	var so;
+	so = new SWFObject('framework.swf','main','1000','623','10');
+	
+		
+	so.addParam("allowScriptAccess", "always");
+
+	so.addVariable("showRSSFeed", showRSSFeed);	
+	so.addVariable("lmsHeartbeat", lmsHeartbeat); //Prabaharan 21/07/2010
+	so.addVariable("RCapplicationpath", RCapplicationpath); // rahul 02/08/2010
+	so.addVariable("showRCdownload", showRCdownload);
+	so.addVariable("restrictRCaccess", restrictRCaccess);
+	so.addVariable("courseRCpath", escape(courseRCpath));
+	so.addVariable("InternalUser", InternalUser);
+	so.addVariable("CourseCode", escape(CourseCode));
+	so.addVariable("CourseName", escape(CourseName)); // ramanan : 09/07/2010
+	
+	if(type != "wbt")	{
+  		namearr = StudentName.split(",")
+		studentname = namearr[0]+" "+namearr[1];
+		
+		so.addVariable("studentname", studentname);
+		so.addVariable("lms", "scorm");
+		
+		//alert("Lesson_location :: " + Lesson_location + " PageVisitedStatus :: " + PageVisitedStatus);
+
+		if(Lesson_location !="" && Lesson_location !="undefined"){
+			so.addVariable("lessonlocation", Lesson_location);
+			so.addVariable("score", Score);
+		}else{
+			so.addVariable("lessonlocation", "empty");
+		}
+	
+		if(PageVisitedStatus !="" && PageVisitedStatus !="undefined"){
+			so.addVariable("pagevisitedstaus", PageVisitedStatus);
+		}else{
+			so.addVariable("pagevisitedstaus", "empty");
+		}
+	}else{
+		so.addVariable("lms", "wbt");
+	}
+	
+	so.write('flashbanner');
+	
+}
+
+</script>
+</body>
+</html>
